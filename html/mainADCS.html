@@ -1,0 +1,305 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>mainADCS</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-04-27"><meta name="DC.source" content="mainADCS.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%{
+</span><span class="comment">
+</span><span class="comment">UPC
+</span><span class="comment">miguel.diaz.montiel@estudiantat.upc.edu
+</span><span class="comment">
+</span><span class="comment">Automated calculation for magnetic moments and torques for a pico spacecraft at 400 km, pocektcube 1U
+</span><span class="comment">Temperature ranges from* [-30, 45, 65]C  -&gt; [243.15, 318.15, 338.15]K
+</span><span class="comment">https://radian.systems/es/fossasat-1-data/
+</span><span class="comment">
+</span><span class="comment">Square coils
+</span><span class="comment">
+</span><span class="comment">Orbital radius: 6,778.14
+</span><span class="comment">
+</span><span class="comment">[Random links for me]
+</span><span class="comment">https://www.deepfriedneon.com/tesla_f_calcspiral.html
+</span><span class="comment">https://www.toppr.com/ask/question/find-the-resistance-of-the-coil-of-length-l-number-of-turns-per-unit-length/
+</span><span class="comment">https://rimstar.org/science_electronics_projects/coil_design_inductance.htm
+</span><span class="comment">https://www.translatorscafe.com/unit-converter/ro/calculator/planar-coil-inductance/
+</span><span class="comment">https://sciencing.com/calculate-crosssection-area-4913182.html
+</span><span class="comment">[end]
+</span><span class="comment">
+</span><span class="comment">%}
+</span>
+<span class="comment">%</span>
+<span class="comment">% [Start of parameters]</span>
+<span class="comment">%</span>
+clear <span class="string">all</span>;
+
+Vin = 1.5; <span class="comment">%V</span>
+
+tempLevel = 3; <span class="comment">% 1 for minimmum, 2 for ambient, and 3 for maximum1, 4 maxiumum2</span>
+
+side=0.05; <span class="comment">%side in m</span>
+mass=0.250; <span class="comment">%weight in kg</span>
+
+coilLayers = 7; <span class="comment">% PCB multilayer levels</span>
+outerDiameter = 45; <span class="comment">%mm</span>
+innerDiamater = 20; <span class="comment">%mm</span>
+
+trace_width = 1.8; <span class="comment">%mm</span>
+trace_height = 0.018; <span class="comment">% 18um  =  0.018 base unit mm</span>
+trace_spacing = 0.2; <span class="comment">%mm</span>
+
+requiredTime= 180;<span class="comment">%time to rotate the spacecraft in seconds</span>
+distancePhi = 180; <span class="comment">%angular distance to be covered</span>
+angleFields = 90;<span class="comment">%angle among magnetic and coils fields</span>
+
+T(1) = 244; <span class="comment">%K min temp</span>
+T(2) = 298.15; <span class="comment">%K ambient temp 25 degrees</span>
+T(3) = 319; <span class="comment">%K max temp1</span>
+T(4) = 338.15; <span class="comment">%K max temp2</span>
+
+Rsafe = 10;<span class="comment">% extra ohms to lower the amperage</span>
+
+option(1) = 19.5*10^-6;<span class="comment">% T Earth Magnetic flux density at 400km from fossasatGithub;</span>
+option(2) = 37.6316*10^-6;<span class="comment">% T Earth magnetic field at Barcelona 400km above sea level NOOA data 37631.6*10^-9; T</span>
+localMagneticField = option(2);
+
+spacecraftSpeed = 7.668557; <span class="comment">%km/s satellite speed at 400km</span>
+
+<span class="comment">%</span>
+<span class="comment">% [END of parameters]</span>
+<span class="comment">%</span>
+[N,coilLength,I,crossSectionalArea,R,totalMagneticMoment, L,totalLength]=obtainMagneticMoment(Vin, T(tempLevel), coilLayers, outerDiameter, innerDiamater, trace_width, trace_height, trace_spacing,Rsafe);
+[generatedTime, moi, genTor] = torque(totalMagneticMoment, distancePhi, angleFields, side, mass, localMagneticField);
+[distanceOrb, earthDistance] = distance(generatedTime, spacecraftSpeed);
+
+status = <span class="string">""</span>;
+<span class="keyword">if</span> requiredTime &gt; generatedTime
+    status = <span class="string">"SUCCESFULL"</span>;
+<span class="keyword">else</span>
+    status = <span class="string">"NOK"</span>;
+<span class="keyword">end</span>
+
+totTurns = N*coilLayers;
+y=R-Rsafe;
+
+disp(<span class="string">"**********************"</span>);
+disp(<span class="string">"Calculations at temperature K: "</span>+T(tempLevel));
+disp(<span class="string">"Vin in V: "</span>+Vin);
+disp(<span class="string">"Number of layers: "</span>+coilLayers);
+disp(<span class="string">"Number of turns for one coil layer n: "</span>+N);
+disp(<span class="string">"Number of turns for all layers n: "</span>+totTurns);
+disp(<span class="string">"Coil length for one layer m: "</span>+coilLength);
+disp(<span class="string">"Total coil length for all layers m: "</span>+totalLength);
+disp(<span class="string">"Intensity in all coil layers A: "</span>+I);
+disp(<span class="string">"Trace cross sectional area in m^2: "</span>+crossSectionalArea);
+disp(<span class="string">"Trace resistance in ohms for all layers: "</span>+y);
+disp(<span class="string">"Trace resistance in ohms for all layers with Rsafe: "</span>+R);
+disp(<span class="string">"Coil Inductance value in uH: "</span>+L);
+disp(<span class="string">"Magnetic moment from all "</span>+coilLayers +<span class="string">" layers, Am2: "</span>+totalMagneticMoment);
+disp(<span class="string">" "</span>);
+disp(<span class="string">"Required gradians to turn: "</span>+distancePhi);
+disp(<span class="string">"Moment of Inertia in kg*m^2: "</span>+moi);
+disp(<span class="string">"Magnetic field reference in T: "</span>+localMagneticField);
+disp(<span class="string">"Generated torque in Nm: "</span>+genTor);
+disp(<span class="string">"Required time in seconds: "</span>+requiredTime);
+disp(<span class="string">"Generated time in seconds: "</span>+generatedTime);
+disp(<span class="string">"Orbital radius to turn the spacecraft in km: "</span>+distanceOrb);
+disp(<span class="string">"Earth radius to turn the spacecraft in km: "</span>+earthDistance);
+disp(<span class="string">"The simulation is: "</span>+status);
+disp(<span class="string">"**********************"</span>);
+disp(<span class="string">" "</span>);
+</pre><pre class="codeoutput">**********************
+Calculations at temperature K: 319
+Vin in V: 1.5
+Number of layers: 7
+Number of turns for one coil layer n: 6
+Number of turns for all layers n: 42
+Coil length for one layer m: 0.793
+Total coil length for all layers m: 5.551
+Intensity in all coil layers A: 0.1138
+Trace cross sectional area in m^2: 3.24e-08
+Trace resistance in ohms for all layers: 3.1806
+Trace resistance in ohms for all layers with Rsafe: 13.1806
+Coil Inductance value in uH: 1.672
+Magnetic moment from all 7 layers, Am2: 0.0060782
+ 
+Required gradians to turn: 180
+Moment of Inertia in kg*m^2: 0.00010417
+Magnetic field reference in T: 3.7632e-05
+Generated torque in Nm: 2.2873e-07
+Required time in seconds: 180
+Generated time in seconds: 53.492
+Orbital radius to turn the spacecraft in km: 410.2068
+Earth radius to turn the spacecraft in km: 385.9907
+The simulation is: SUCCESFULL
+**********************
+ 
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%{
+
+UPC
+miguel.diaz.montiel@estudiantat.upc.edu
+
+Automated calculation for magnetic moments and torques for a pico spacecraft at 400 km, pocektcube 1U
+Temperature ranges from* [-30, 45, 65]C  -> [243.15, 318.15, 338.15]K 
+https://radian.systems/es/fossasat-1-data/
+
+Square coils
+
+Orbital radius: 6,778.14
+
+[Random links for me]
+https://www.deepfriedneon.com/tesla_f_calcspiral.html
+https://www.toppr.com/ask/question/find-the-resistance-of-the-coil-of-length-l-number-of-turns-per-unit-length/
+https://rimstar.org/science_electronics_projects/coil_design_inductance.htm
+https://www.translatorscafe.com/unit-converter/ro/calculator/planar-coil-inductance/
+https://sciencing.com/calculate-crosssection-area-4913182.html
+[end]
+
+%}
+
+%
+% [Start of parameters]
+%
+clear all;
+
+Vin = 1.5; %V 
+
+tempLevel = 3; % 1 for minimmum, 2 for ambient, and 3 for maximum1, 4 maxiumum2
+
+side=0.05; %side in m
+mass=0.250; %weight in kg
+
+coilLayers = 7; % PCB multilayer levels
+outerDiameter = 45; %mm 
+innerDiamater = 20; %mm
+
+trace_width = 1.8; %mm
+trace_height = 0.018; % 18um  =  0.018 base unit mm
+trace_spacing = 0.2; %mm
+
+requiredTime= 180;%time to rotate the spacecraft in seconds
+distancePhi = 180; %angular distance to be covered
+angleFields = 90;%angle among magnetic and coils fields
+
+T(1) = 244; %K min temp
+T(2) = 298.15; %K ambient temp 25 degrees
+T(3) = 319; %K max temp1
+T(4) = 338.15; %K max temp2
+
+Rsafe = 10;% extra ohms to lower the amperage
+
+option(1) = 19.5*10^-6;% T Earth Magnetic flux density at 400km from fossasatGithub;
+option(2) = 37.6316*10^-6;% T Earth magnetic field at Barcelona 400km above sea level NOOA data 37631.6*10^-9; T
+localMagneticField = option(2);
+
+spacecraftSpeed = 7.668557; %km/s satellite speed at 400km
+
+%
+% [END of parameters]
+%
+[N,coilLength,I,crossSectionalArea,R,totalMagneticMoment, L,totalLength]=obtainMagneticMoment(Vin, T(tempLevel), coilLayers, outerDiameter, innerDiamater, trace_width, trace_height, trace_spacing,Rsafe);
+[generatedTime, moi, genTor] = torque(totalMagneticMoment, distancePhi, angleFields, side, mass, localMagneticField);
+[distanceOrb, earthDistance] = distance(generatedTime, spacecraftSpeed);
+
+status = "";
+if requiredTime > generatedTime
+    status = "SUCCESFULL";
+else
+    status = "NOK";
+end
+
+totTurns = N*coilLayers;
+y=R-Rsafe;
+
+disp("**********************");
+disp("Calculations at temperature K: "+T(tempLevel));
+disp("Vin in V: "+Vin);
+disp("Number of layers: "+coilLayers);
+disp("Number of turns for one coil layer n: "+N);
+disp("Number of turns for all layers n: "+totTurns);
+disp("Coil length for one layer m: "+coilLength);
+disp("Total coil length for all layers m: "+totalLength);
+disp("Intensity in all coil layers A: "+I);
+disp("Trace cross sectional area in m^2: "+crossSectionalArea);
+disp("Trace resistance in ohms for all layers: "+y);
+disp("Trace resistance in ohms for all layers with Rsafe: "+R);
+disp("Coil Inductance value in uH: "+L);
+disp("Magnetic moment from all "+coilLayers +" layers, Am2: "+totalMagneticMoment);
+disp(" ");
+disp("Required gradians to turn: "+distancePhi);
+disp("Moment of Inertia in kg*m^2: "+moi);
+disp("Magnetic field reference in T: "+localMagneticField);
+disp("Generated torque in Nm: "+genTor);
+disp("Required time in seconds: "+requiredTime);
+disp("Generated time in seconds: "+generatedTime);
+disp("Orbital radius to turn the spacecraft in km: "+distanceOrb);
+disp("Earth radius to turn the spacecraft in km: "+earthDistance);
+disp("The simulation is: "+status);
+disp("**********************");
+disp(" ");
+##### SOURCE END #####
+--></body></html>
